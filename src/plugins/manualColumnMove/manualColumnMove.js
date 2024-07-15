@@ -416,7 +416,7 @@ class ManualColumnMove extends BasePlugin {
    * @private
    */
   updateColumnsMapper() {
-    const countCols = this.hot.countSourceCols();
+    const countCols = this.hot.countCols();
     const columnsMapperLen = this.columnsMapper._arrayMap.length;
 
     if (columnsMapperLen === 0) {

@@ -29,7 +29,7 @@
  * FROM USE OR INABILITY TO USE THIS SOFTWARE.
  * 
  * Version: 7.2.1
- * Release date: 16/10/2019 (built at 09/07/2020 11:36:47)
+ * Release date: 16/10/2019 (built at 15/07/2024 16:45:08)
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -16571,7 +16571,7 @@ var store = __webpack_require__(399);
 (module.exports = function (key, value) {
   return store[key] || (store[key] = value !== undefined ? value : {});
 })('versions', []).push({
-  version: '3.3.3',
+  version: '3.3.2',
   mode: IS_PURE ? 'pure' : 'global',
   copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
 });
@@ -70773,7 +70773,7 @@ Handsontable.EventManager = _eventManager.default;
 Handsontable._getListenersCounter = _eventManager.getListenersCounter; // For MemoryLeak tests
 
 Handsontable.packageName = 'handsontable';
-Handsontable.buildDate = "09/07/2020 11:36:47";
+Handsontable.buildDate = "15/07/2024 16:45:08";
 Handsontable.version = "7.2.1"; // Export Hooks singleton
 
 Handsontable.hooks = _pluginHooks.default.getSingleton(); // TODO: Remove this exports after rewrite tests about this module
@@ -94277,7 +94277,7 @@ function (_BasePlugin) {
   }, {
     key: "updateColumnsMapper",
     value: function updateColumnsMapper() {
-      var countCols = this.hot.countSourceCols();
+      var countCols = this.hot.countCols();
       var columnsMapperLen = this.columnsMapper._arrayMap.length;
 
       if (columnsMapperLen === 0) {
