@@ -1,10 +1,9 @@
 const moment = require('moment');
-const packageBody = require('./package.json');
 
 module.exports = {
   HOT_FILENAME: 'handsontable',
-  HOT_VERSION: packageBody.version,
-  HOT_PACKAGE_NAME: packageBody.name,
+  HOT_VERSION: '14.5.0',
+  HOT_PACKAGE_NAME: 'handsontable',
   HOT_BUILD_DATE: moment().format('DD/MM/YYYY HH:mm:ss'),
-  HOT_RELEASE_DATE: '23/10/2019',
+  HOT_RELEASE_DATE: '30/07/2024',
 };
