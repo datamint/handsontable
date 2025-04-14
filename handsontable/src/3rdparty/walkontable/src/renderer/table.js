@@ -313,6 +313,8 @@ export class TableRenderer {
         if (rowHeight) {
           // Decrease height. 1 pixel will be "replaced" by 1px border top
           TR.firstChild.style.height = `${rowHeight - borderCompensation}px`;
+          // 14.5.0 > TR.firstChild.style.height = `${rowHeight - 1}px`;
+          // DP-14.5.0 > TR.firstChild.style.height = `${rowHeight}px`;
         } else {
           TR.firstChild.style.height = '';
         }

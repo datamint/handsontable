@@ -819,7 +819,11 @@ export function outerHeight(element) {
  * @returns {number} Element's inner height.
  */
 export function innerHeight(element) {
-  return element.clientHeight || element.innerHeight;
+  if (element.getBoundingClientRect) {
+    const height = +element.getBoundingClientRect().height;
+    return height.toFixed(2);
+  }
+  return element.offsetHeight || element.clientHeight || element.innerHeight;
 }
 
 /**

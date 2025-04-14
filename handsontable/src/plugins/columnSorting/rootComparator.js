@@ -11,8 +11,8 @@ export function rootComparator(sortingOrders, columnMetas) {
   return function(rowIndexWithValues, nextRowIndexWithValues) {
     // We sort array of arrays. Single array is in form [rowIndex, ...values].
     // We compare just values, stored at second index of array.
-    const [, ...values] = rowIndexWithValues;
-    const [, ...nextValues] = nextRowIndexWithValues;
+    const [row, ...values] = rowIndexWithValues;
+    const [nextRow, ...nextValues] = nextRowIndexWithValues;
 
     return (function getCompareResult(column) {
       const sortingOrder = sortingOrders[column];
@@ -22,7 +22,7 @@ export function rootComparator(sortingOrders, columnMetas) {
       const pluginSettings = columnMeta.columnSorting;
       const compareFunctionFactory = pluginSettings.compareFunctionFactory ?
         pluginSettings.compareFunctionFactory : getCompareFunctionFactory(columnMeta.type);
-      const compareResult = compareFunctionFactory(sortingOrder, columnMeta, pluginSettings)(value, nextValue);
+      const compareResult = compareFunctionFactory(sortingOrder, columnMeta, pluginSettings)([row, value], [nextRow, nextValue]);
 
       // DIFF - MultiColumnSorting & ColumnSorting: removed iteration through next sorted columns.
 

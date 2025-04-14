@@ -790,10 +790,18 @@ class Table {
       ) {
         if (!borderBoxSizing) {
           rowCurrentHeight += 1;
-        }
+      }
 
         this.dataAccessObject.wtViewport.oversizedRows[sourceRowIndex] = rowCurrentHeight;
       }
+      /* 
+      DP-14.5.0
+      if ((!previousRowHeight && this.wtSettings.getSetting('defaultRowHeight') < rowInnerHeight ||
+          previousRowHeight < rowInnerHeight)) {
+        // rowInnerHeight += 1;
+        this.dataAccessObject.wtViewport.oversizedRows[sourceRowIndex] = rowInnerHeight;
+      } 
+      */
     }
   }
 

@@ -276,6 +276,14 @@ class DataManager {
       __children: this.data
     };
 
+
+    /*do not recalculate every time, its very slow, extremely slow.*/
+    const nestedCountedRows = this.hot.getSettings().nestedCountedRows;
+
+    if (nestedCountedRows) {
+      return nestedCountedRows;
+    }
+
     return this.countChildren(rootNodeMock);
   }
 

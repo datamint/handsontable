@@ -26,7 +26,7 @@
  * USE OR INABILITY TO USE THIS SOFTWARE.
  *
  * Version: 15.2.0
- * Release date: 19/03/2025 (built at 14/04/2025 12:14:33)
+ * Release date: 19/03/2025 (built at 14/04/2025 17:05:16)
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -104,7 +104,7 @@ Handsontable.hooks = _hooks.Hooks.getSingleton();
 Handsontable.CellCoords = _src.CellCoords;
 Handsontable.CellRange = _src.CellRange;
 Handsontable.packageName = 'handsontable';
-Handsontable.buildDate = "14/04/2025 12:14:33";
+Handsontable.buildDate = "14/04/2025 17:05:16";
 Handsontable.version = "15.2.0";
 Handsontable.languages = {
   dictionaryKeys: _registry.dictionaryKeys,
@@ -9455,7 +9455,11 @@ function outerHeight(element) {
  * @returns {number} Element's inner height.
  */
 function innerHeight(element) {
-  return element.clientHeight || element.innerHeight;
+  if (element.getBoundingClientRect) {
+    const height = +element.getBoundingClientRect().height;
+    return height.toFixed(2);
+  }
+  return element.offsetHeight || element.clientHeight || element.innerHeight;
 }
 
 /**
@@ -24003,6 +24007,14 @@ class Table {
         }
         this.dataAccessObject.wtViewport.oversizedRows[sourceRowIndex] = rowCurrentHeight;
       }
+      /* 
+      DP-14.5.0
+      if ((!previousRowHeight && this.wtSettings.getSetting('defaultRowHeight') < rowInnerHeight ||
+          previousRowHeight < rowInnerHeight)) {
+        // rowInnerHeight += 1;
+        this.dataAccessObject.wtViewport.oversizedRows[sourceRowIndex] = rowInnerHeight;
+      } 
+      */
     }
   }
 
@@ -26422,6 +26434,8 @@ class TableRenderer {
         if (rowHeight) {
           // Decrease height. 1 pixel will be "replaced" by 1px border top
           TR.firstChild.style.height = `${rowHeight - borderCompensation}px`;
+          // 14.5.0 > TR.firstChild.style.height = `${rowHeight - 1}px`;
+          // DP-14.5.0 > TR.firstChild.style.height = `${rowHeight}px`;
         } else {
           TR.firstChild.style.height = '';
         }
@@ -60317,8 +60331,8 @@ function rootComparator(sortingOrders, columnMetas) {
   return function (rowIndexWithValues, nextRowIndexWithValues) {
     // We sort array of arrays. Single array is in form [rowIndex, ...values].
     // We compare just values, stored at second index of array.
-    const [, ...values] = rowIndexWithValues;
-    const [, ...nextValues] = nextRowIndexWithValues;
+    const [row, ...values] = rowIndexWithValues;
+    const [nextRow, ...nextValues] = nextRowIndexWithValues;
     return function getCompareResult(column) {
       const sortingOrder = sortingOrders[column];
       const columnMeta = columnMetas[column];
@@ -60326,7 +60340,7 @@ function rootComparator(sortingOrders, columnMetas) {
       const nextValue = nextValues[column];
       const pluginSettings = columnMeta.columnSorting;
       const compareFunctionFactory = pluginSettings.compareFunctionFactory ? pluginSettings.compareFunctionFactory : (0, _sortService.getCompareFunctionFactory)(columnMeta.type);
-      const compareResult = compareFunctionFactory(sortingOrder, columnMeta, pluginSettings)(value, nextValue);
+      const compareResult = compareFunctionFactory(sortingOrder, columnMeta, pluginSettings)([row, value], [nextRow, nextValue]);
 
       // DIFF - MultiColumnSorting & ColumnSorting: removed iteration through next sorted columns.
 
@@ -86689,7 +86703,7 @@ function rootComparator(sortingOrders, columnMetas) {
       const nextValue = nextValues[column];
       const pluginSettings = columnMeta.multiColumnSorting;
       const compareFunctionFactory = pluginSettings.compareFunctionFactory ? pluginSettings.compareFunctionFactory : (0, _sortService.getCompareFunctionFactory)(columnMeta.type);
-      const compareResult = compareFunctionFactory(sortingOrder, columnMeta, pluginSettings)(value, nextValue);
+      const compareResult = compareFunctionFactory(sortingOrder, columnMeta, pluginSettings)(rowIndexWithValues, nextRowIndexWithValues);
       if (compareResult === _sortService.DO_NOT_SWAP) {
         const nextSortedColumn = column + 1;
         if (typeof columnMetas[nextSortedColumn] !== 'undefined') {
@@ -87552,7 +87566,7 @@ class NestedHeaders extends _base.BasePlugin {
         label: ''
       };
       if (isPlaceholder || isHidden) {
-        (0, _element.addClass)(TH, 'hiddenHeader');
+        // addClass(TH, 'hiddenHeader');
       } else if (colspan > 1) {
         var _wtOverlays$topInline, _wtOverlays$inlineSta, _wtOverlays$topOverla;
         const {
@@ -87604,7 +87618,7 @@ class NestedHeaders extends _base.BasePlugin {
       isPlaceholder
     } = (_classPrivateFieldGet3 = _classPrivateFieldGet(_stateManager, this).getHeaderSettings(headerLevel, visualColumnIndex)) !== null && _classPrivateFieldGet3 !== void 0 ? _classPrivateFieldGet3 : {};
     if (isPlaceholder || isHidden) {
-      return '';
+      // return '';
     }
     return this.hot.getColHeader(visualColumnIndex, headerLevel);
   }
@@ -91041,6 +91055,12 @@ class DataManager {
     const rootNodeMock = {
       __children: this.data
     };
+
+    /*do not recalculate every time, its very slow, extremely slow.*/
+    const nestedCountedRows = this.hot.getSettings().nestedCountedRows;
+    if (nestedCountedRows) {
+      return nestedCountedRows;
+    }
     return this.countChildren(rootNodeMock);
   }
 
@@ -91665,12 +91685,12 @@ class CollapsingUI extends _base.default {
     let rowsToTrim = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
     let recursive = arguments.length > 2 ? arguments[2] : undefined;
     let doTrimming = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-    if (this.dataManager.hasChildren(parentIndex)) {
+    if (this.dataManager.hasChildren(parentIndex) && recursive) {
       const parentObject = this.dataManager.getDataObject(parentIndex);
       (0, _array.arrayEach)(parentObject.__children, elem => {
         const elemIndex = this.dataManager.getRowIndex(elem);
         rowsToTrim.push(elemIndex);
-        this.collapseChildRows(elemIndex, rowsToTrim);
+        this.collapseChildRows(elemIndex, rowsToTrim, recursive);
       });
     }
     if (doTrimming) {
@@ -91704,7 +91724,7 @@ class CollapsingUI extends _base.default {
     (0, _array.arrayEach)(rowIndexes, elem => {
       rowsToUntrim.push(elem);
       if (recursive) {
-        this.expandChildRows(elem, rowsToUntrim);
+        this.expandChildRows(elem, rowsToUntrim, recursive);
       }
     });
     if (doTrimming) {
@@ -91725,13 +91745,13 @@ class CollapsingUI extends _base.default {
     let rowsToUntrim = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
     let recursive = arguments.length > 2 ? arguments[2] : undefined;
     let doTrimming = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-    if (this.dataManager.hasChildren(parentIndex)) {
+    if (this.dataManager.hasChildren(parentIndex) && recursive) {
       const parentObject = this.dataManager.getDataObject(parentIndex);
       (0, _array.arrayEach)(parentObject.__children, elem => {
         if (!this.isAnyParentCollapsed(elem)) {
           const elemIndex = this.dataManager.getRowIndex(elem);
           rowsToUntrim.push(elemIndex);
-          this.expandChildRows(elemIndex, rowsToUntrim);
+          this.expandChildRows(elemIndex, rowsToUntrim, recursive);
         }
       });
     }
@@ -91751,6 +91771,7 @@ class CollapsingUI extends _base.default {
   expandChildren(row) {
     let forceRender = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
     let doTrimming = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    let recursive = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
     const rowsToExpand = [];
     let rowObject = null;
     let rowIndex = null;
@@ -91769,7 +91790,7 @@ class CollapsingUI extends _base.default {
         rowsToExpand.push(childIndex);
       });
     }
-    rowsToUntrim = this.expandRows(rowsToExpand, true, false);
+    rowsToUntrim = this.expandRows(rowsToExpand, recursive, false);
     if (doTrimming) {
       this.untrimRows(rowsToUntrim);
     }
@@ -91789,9 +91810,10 @@ class CollapsingUI extends _base.default {
   expandMultipleChildren(rows) {
     let forceRender = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
     let doTrimming = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+    let recursive = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
     const rowsToUntrim = [];
     (0, _array.arrayEach)(rows, elem => {
-      rowsToUntrim.push(...this.expandChildren(elem, false, false));
+      rowsToUntrim.push(...this.expandChildren(elem, false, false, recursive));
     });
     if (doTrimming) {
       this.untrimRows(rowsToUntrim);
@@ -91812,7 +91834,7 @@ class CollapsingUI extends _base.default {
         parentsToCollapse.push(elem);
       }
     });
-    this.collapseMultipleChildren(parentsToCollapse);
+    this.collapseMultipleChildren(parentsToCollapse, false);
     this.renderAndAdjust();
   }
 
@@ -91827,7 +91849,7 @@ class CollapsingUI extends _base.default {
         parentsToExpand.push(elem);
       }
     });
-    this.expandMultipleChildren(parentsToExpand);
+    this.expandMultipleChildren(parentsToExpand, undefined, undefined, true);
     this.renderAndAdjust();
   }
 
@@ -92071,7 +92093,10 @@ class HeadersUI extends _base.default {
    * @param {HTMLElement} TH TH 3element.
    */
   appendLevelIndicators(row, TH) {
-    const rowIndex = this.hot.toPhysicalRow(row);
+    let rowIndex = this.hot.toPhysicalRow(row);
+    if (rowIndex === null) {
+      rowIndex = row;
+    }
     const rowLevel = this.dataManager.getRowLevel(rowIndex);
     const rowObject = this.dataManager.getDataObject(rowIndex);
     const innerDiv = TH.getElementsByTagName('DIV')[0];

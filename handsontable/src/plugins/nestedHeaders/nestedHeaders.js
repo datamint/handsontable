@@ -359,7 +359,7 @@ export class NestedHeaders extends BasePlugin {
       } = this.#stateManager.getHeaderSettings(headerLevel, visualColumnIndex) ?? { label: '' };
 
       if (isPlaceholder || isHidden) {
-        addClass(TH, 'hiddenHeader');
+        // addClass(TH, 'hiddenHeader');
 
       } else if (colspan > 1) {
         const { wtOverlays } = view._wt;
@@ -417,7 +417,7 @@ export class NestedHeaders extends BasePlugin {
     } = this.#stateManager.getHeaderSettings(headerLevel, visualColumnIndex) ?? {};
 
     if (isPlaceholder || isHidden) {
-      return '';
+      // return '';
     }
 
     return this.hot.getColHeader(visualColumnIndex, headerLevel);

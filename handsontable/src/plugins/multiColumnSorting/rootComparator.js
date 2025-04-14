@@ -22,7 +22,7 @@ export function rootComparator(sortingOrders, columnMetas) {
       const pluginSettings = columnMeta.multiColumnSorting;
       const compareFunctionFactory = pluginSettings.compareFunctionFactory ?
         pluginSettings.compareFunctionFactory : getCompareFunctionFactory(columnMeta.type);
-      const compareResult = compareFunctionFactory(sortingOrder, columnMeta, pluginSettings)(value, nextValue);
+      const compareResult = compareFunctionFactory(sortingOrder, columnMeta, pluginSettings)(rowIndexWithValues, nextRowIndexWithValues);
 
       if (compareResult === DO_NOT_SWAP) {
         const nextSortedColumn = column + 1;

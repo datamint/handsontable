@@ -168,14 +168,14 @@ class CollapsingUI extends BaseUI {
    * @param {boolean} [doTrimming=true] I determine whether collapsing should envolve trimming rows.
    */
   collapseChildRows(parentIndex, rowsToTrim = [], recursive, doTrimming = false) {
-    if (this.dataManager.hasChildren(parentIndex)) {
+    if (this.dataManager.hasChildren(parentIndex) && recursive) {
       const parentObject = this.dataManager.getDataObject(parentIndex);
 
       arrayEach(parentObject.__children, (elem) => {
         const elemIndex = this.dataManager.getRowIndex(elem);
 
         rowsToTrim.push(elemIndex);
-        this.collapseChildRows(elemIndex, rowsToTrim);
+        this.collapseChildRows(elemIndex, rowsToTrim, recursive);
       });
     }
 
@@ -209,7 +209,7 @@ class CollapsingUI extends BaseUI {
       rowsToUntrim.push(elem);
 
       if (recursive) {
-        this.expandChildRows(elem, rowsToUntrim);
+        this.expandChildRows(elem, rowsToUntrim, recursive);
       }
     });
 
@@ -229,7 +229,7 @@ class CollapsingUI extends BaseUI {
    * @param {boolean} [doTrimming=false] I determine whether collapsing should envolve trimming rows.
    */
   expandChildRows(parentIndex, rowsToUntrim = [], recursive, doTrimming = false) {
-    if (this.dataManager.hasChildren(parentIndex)) {
+    if (this.dataManager.hasChildren(parentIndex) && recursive) {
       const parentObject = this.dataManager.getDataObject(parentIndex);
 
       arrayEach(parentObject.__children, (elem) => {
@@ -237,7 +237,7 @@ class CollapsingUI extends BaseUI {
           const elemIndex = this.dataManager.getRowIndex(elem);
 
           rowsToUntrim.push(elemIndex);
-          this.expandChildRows(elemIndex, rowsToUntrim);
+          this.expandChildRows(elemIndex, rowsToUntrim, recursive);
         }
       });
     }
@@ -255,7 +255,7 @@ class CollapsingUI extends BaseUI {
    * @param {boolean} [doTrimming=true] If set to `true`, the trimming will be applied when the function finishes.
    * @returns {number[]}
    */
-  expandChildren(row, forceRender = true, doTrimming = true) {
+  expandChildren(row, forceRender = true, doTrimming = true, recursive = false) {
     const rowsToExpand = [];
     let rowObject = null;
     let rowIndex = null;
@@ -279,7 +279,7 @@ class CollapsingUI extends BaseUI {
       });
     }
 
-    rowsToUntrim = this.expandRows(rowsToExpand, true, false);
+    rowsToUntrim = this.expandRows(rowsToExpand, recursive, false);
 
     if (doTrimming) {
       this.untrimRows(rowsToUntrim);
@@ -299,11 +299,11 @@ class CollapsingUI extends BaseUI {
    * @param {boolean} [forceRender=true] `true` if the table should render after finishing the function.
    * @param {boolean} [doTrimming=true] `true` if the rows should be untrimmed after finishing the function.
    */
-  expandMultipleChildren(rows, forceRender = true, doTrimming = true) {
+  expandMultipleChildren(rows, forceRender = true, doTrimming = true, recursive = false) {
     const rowsToUntrim = [];
 
     arrayEach(rows, (elem) => {
-      rowsToUntrim.push(...this.expandChildren(elem, false, false));
+      rowsToUntrim.push(...this.expandChildren(elem, false, false, recursive));
     });
 
     if (doTrimming) {
@@ -328,7 +328,7 @@ class CollapsingUI extends BaseUI {
       }
     });
 
-    this.collapseMultipleChildren(parentsToCollapse);
+    this.collapseMultipleChildren(parentsToCollapse, false);
 
     this.renderAndAdjust();
   }
@@ -346,7 +346,7 @@ class CollapsingUI extends BaseUI {
       }
     });
 
-    this.expandMultipleChildren(parentsToExpand);
+    this.expandMultipleChildren(parentsToExpand, undefined, undefined, true);
 
     this.renderAndAdjust();
   }
