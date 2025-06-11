@@ -26,7 +26,7 @@
  * USE OR INABILITY TO USE THIS SOFTWARE.
  *
  * Version: 15.2.0
- * Release date: 19/03/2025 (built at 06/06/2025 09:42:13)
+ * Release date: 19/03/2025 (built at 10/06/2025 17:40:36)
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -42855,7 +42855,7 @@ Handsontable.hooks = _hooks.Hooks.getSingleton();
 Handsontable.CellCoords = _src.CellCoords;
 Handsontable.CellRange = _src.CellRange;
 Handsontable.packageName = 'handsontable';
-Handsontable.buildDate = "06/06/2025 09:42:13";
+Handsontable.buildDate = "10/06/2025 17:40:36";
 Handsontable.version = "15.2.0";
 Handsontable.languages = {
   dictionaryKeys: _registry.dictionaryKeys,
@@ -163494,7 +163494,7 @@ class CollapsingUI extends _base.default {
     let rowsToTrim = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
     let recursive = arguments.length > 2 ? arguments[2] : undefined;
     let doTrimming = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-    if (this.dataManager.hasChildren(parentIndex) && recursive) {
+    if (this.dataManager.hasChildren(parentIndex)) {
       const parentObject = this.dataManager.getDataObject(parentIndex);
       (0, _array.arrayEach)(parentObject.__children, elem => {
         const elemIndex = this.dataManager.getRowIndex(elem);

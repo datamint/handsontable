@@ -166,7 +166,7 @@ class CollapsingUI extends BaseUI {
     let rowsToTrim = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
     let recursive = arguments.length > 2 ? arguments[2] : undefined;
     let doTrimming = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-    if (this.dataManager.hasChildren(parentIndex) && recursive) {
+    if (this.dataManager.hasChildren(parentIndex)) {
       const parentObject = this.dataManager.getDataObject(parentIndex);
       arrayEach(parentObject.__children, elem => {
         const elemIndex = this.dataManager.getRowIndex(elem);
