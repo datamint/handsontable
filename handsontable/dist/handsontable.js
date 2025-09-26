@@ -26,7 +26,7 @@
  * USE OR INABILITY TO USE THIS SOFTWARE.
  *
  * Version: 15.2.0
- * Release date: 19/03/2025 (built at 10/06/2025 17:40:36)
+ * Release date: 19/03/2025 (built at 26/09/2025 15:40:19)
  */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
@@ -104,7 +104,7 @@ Handsontable.hooks = _hooks.Hooks.getSingleton();
 Handsontable.CellCoords = _src.CellCoords;
 Handsontable.CellRange = _src.CellRange;
 Handsontable.packageName = 'handsontable';
-Handsontable.buildDate = "10/06/2025 17:40:36";
+Handsontable.buildDate = "26/09/2025 15:40:19";
 Handsontable.version = "15.2.0";
 Handsontable.languages = {
   dictionaryKeys: _registry.dictionaryKeys,
@@ -87566,7 +87566,7 @@ class NestedHeaders extends _base.BasePlugin {
         label: ''
       };
       if (isPlaceholder || isHidden) {
-        // addClass(TH, 'hiddenHeader');
+        (0, _element.addClass)(TH, 'hiddenHeader');
       } else if (colspan > 1) {
         var _wtOverlays$topInline, _wtOverlays$inlineSta, _wtOverlays$topOverla;
         const {
@@ -87618,7 +87618,7 @@ class NestedHeaders extends _base.BasePlugin {
       isPlaceholder
     } = (_classPrivateFieldGet3 = _classPrivateFieldGet(_stateManager, this).getHeaderSettings(headerLevel, visualColumnIndex)) !== null && _classPrivateFieldGet3 !== void 0 ? _classPrivateFieldGet3 : {};
     if (isPlaceholder || isHidden) {
-      // return '';
+      return '';
     }
     return this.hot.getColHeader(visualColumnIndex, headerLevel);
   }

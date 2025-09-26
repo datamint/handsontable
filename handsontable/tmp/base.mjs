@@ -35,7 +35,7 @@ Handsontable.hooks = Hooks.getSingleton();
 Handsontable.CellCoords = CellCoords;
 Handsontable.CellRange = CellRange;
 Handsontable.packageName = 'handsontable';
-Handsontable.buildDate = "10/06/2025 17:40:24";
+Handsontable.buildDate = "26/09/2025 15:40:09";
 Handsontable.version = "15.2.0";
 Handsontable.languages = {
   dictionaryKeys,

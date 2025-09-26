@@ -431,7 +431,7 @@ export class NestedHeaders extends BasePlugin {
         label: ''
       };
       if (isPlaceholder || isHidden) {
-        // addClass(TH, 'hiddenHeader');
+        addClass(TH, 'hiddenHeader');
       } else if (colspan > 1) {
         var _wtOverlays$topInline, _wtOverlays$inlineSta, _wtOverlays$topOverla;
         const {
@@ -483,7 +483,7 @@ export class NestedHeaders extends BasePlugin {
       isPlaceholder
     } = (_classPrivateFieldGet3 = _classPrivateFieldGet(_stateManager, this).getHeaderSettings(headerLevel, visualColumnIndex)) !== null && _classPrivateFieldGet3 !== void 0 ? _classPrivateFieldGet3 : {};
     if (isPlaceholder || isHidden) {
-      // return '';
+      return '';
     }
     return this.hot.getColHeader(visualColumnIndex, headerLevel);
   }
